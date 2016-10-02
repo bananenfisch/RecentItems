@@ -17,11 +17,11 @@ SETTINGS:
 
 To change the default settings (10 items, 50 more-items, no blacklisting), go to the top of your extensions.js, should be here:
 
-~/.local/share/gnome-shell/extensions/RecentItems@bananenfisch.net/extension.js
+~/.local/share/gnome-shell/extensions/RecentItems@bananenfisch.net/extension.js  
 or /usr/share/gnome-shell/extensions/RecentItems@bananenfisch.net/extension.js
 
-const ITEMS = 10;       // number of items to list
-const MORE = 50;        // number of items to list under "more..."
+const ITEMS = 10;       // number of items to list  
+const MORE = 50;        // number of items to list under "more..."  
 const BLACKLIST = "";   // to blacklist (hide) spezific MIME media types
 
 If you set MORE = 0, there will be no "More..."-Button. Available media-types are: text, image, audio, video, application, multipart, message, model. You can define one or more (seperate with ",") types.
