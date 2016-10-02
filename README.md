@@ -3,7 +3,7 @@ Recent Items - an extension for gnome-shell
 
 https://extensions.gnome.org/extension/72/recent-items/
 
-TODOs:
+TODOS:
 
 - right-click on single entry: remove from list, show in folder
 - search input field
@@ -13,7 +13,7 @@ TODOs:
 - error-msg if file does not exist
 - overview tab (like the extension for zeitgeist)?
 
-Settings:
+SETTINGS:
 
 To change the default settings (10 items, 50 more-items, no blacklisting), go to the top of your extensions.js, should be here:
 
