@@ -10,7 +10,6 @@ TODOS:
 - search input field
 - gui for settings
 - hide button after cleaning
-- folders?
 - error-msg if file does not exist
 - overview tab (like the extension for zeitgeist)?
 
