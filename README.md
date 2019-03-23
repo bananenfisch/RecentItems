@@ -1,11 +1,12 @@
 # RecentItems
 Recent Items - an extension for gnome-shell
+- left click to open file/folder
+- right click to open containing folder
 
 https://extensions.gnome.org/extension/72/recent-items/
 
 TODOS:
 
-- right-click on single entry: remove from list, show in folder
 - search input field
 - gui for settings
 - hide button after cleaning
