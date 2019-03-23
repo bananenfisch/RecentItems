@@ -113,7 +113,7 @@ class RecentItems extends PanelMenu.Button {
                 let uri = items[modlist[id][1]].get_uri();
                 this.menu.addMenuItem(menuItem);
                 menuItem.connect('activate', (mItem, ev) => {
-                    this._launchFile(uri);
+                    this._launchFile(uri, ev);
                 });
                 idshow++;
             }
@@ -131,10 +131,10 @@ class RecentItems extends PanelMenu.Button {
                 {
                     let gicon = Gio.content_type_get_icon(itemtype);
                     let menuItem = new MyPopupMenuItem(gicon, items[modlist[id][1]].get_display_name(), {});
-                    let uri = items[modlist[id][1]].get_uri();
+                    let uri = items[modlist[id][1]];
                     this.moreItem.menu.addMenuItem(menuItem);
                     menuItem.connect('activate', (mItem, ev) => {
-                        this._launchFile(uri);
+                        this._launchFile(uri, ev);
                     });
                     idshow++;
                 }
@@ -156,8 +156,13 @@ class RecentItems extends PanelMenu.Button {
         this._display();
     }
 
-    _launchFile(uri) {
-        Gio.app_info_launch_default_for_uri(uri, global.create_app_launch_context(0, -1));
+    _launchFile(uri, ev) {
+        if (ev.get_button() == 3) { // right button click
+            let dir = Gio.Vfs.get_default().get_file_for_uri(uri).get_parent().get_uri();
+            Gio.app_info_launch_default_for_uri(dir, global.create_app_launch_context(0, -1));
+        } else {
+            Gio.app_info_launch_default_for_uri(uri, global.create_app_launch_context(0, -1));
+        }
     }
 
     _clearAll() {
