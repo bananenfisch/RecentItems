@@ -1,5 +1,5 @@
 /*
-    RECENT ITEMS (Version 16), an extension for the gnome-shell.
+    RECENT ITEMS (Version 17), an extension for the gnome-shell.
     (C) 2011-2019 Kurt Fleisch; <https://www.bananenfisch.net/gnome/> <https://github.com/bananenfisch/RecentItems>
     Gnome Shell Extensions: <https://extensions.gnome.org/>
 
@@ -30,6 +30,7 @@ const BLACKLIST = "image,audio,video";
 
 const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
+const GObject = imports.gi.GObject;
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const PopupMenu = imports.ui.popupMenu;
@@ -39,7 +40,7 @@ function sortfunc(x,y) {
   return y[0] - x[0];
 }
 
-class MyPopupMenuItem extends PopupMenu.PopupBaseMenuItem {
+var MyPopupMenuItem = class MyPopupMenuItem extends PopupMenu.PopupBaseMenuItem {
 
   constructor(gicon, text, params) {
     super(params);
@@ -58,6 +59,7 @@ class MyPopupMenuItem extends PopupMenu.PopupBaseMenuItem {
   }
 };
 
+var RecentItems = GObject.registerClass(
 class RecentItems extends PanelMenu.Button {
 
   _init() {
@@ -158,7 +160,7 @@ class RecentItems extends PanelMenu.Button {
     let GtkRecent = new Gtk.RecentManager();
     GtkRecent.purge_items();
   }
-};
+});
 
 function init() {
 }
