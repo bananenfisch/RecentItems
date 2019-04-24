@@ -6,11 +6,9 @@ Recent Items - an extension for gnome-shell
 https://extensions.gnome.org/extension/72/recent-items/
 
 TODOS:
-
 - do not list deleted files (soon)
 - shortcut, like <super>+r (soon)
 - gui for settings (or simple xml-file for settings) (soon)
-
 - search input field
 - hide button after cleaning
 - simple float right icon to remove an item from list
