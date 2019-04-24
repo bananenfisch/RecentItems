@@ -7,11 +7,14 @@ https://extensions.gnome.org/extension/72/recent-items/
 
 TODOS:
 
+- do not list deleted files (soon)
+- shortcut, like <super>+r (soon)
+- gui for settings (or simple xml-file for settings) (soon)
+
 - search input field
-- gui for settings
 - hide button after cleaning
-- error-msg if file does not exist
-- overview tab (like the extension for zeitgeist)?
+- simple float right icon to remove an item from list
+- option to pin files on top?
 
 SETTINGS:
 
