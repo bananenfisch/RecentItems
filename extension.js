@@ -1,6 +1,6 @@
 /*
-    RECENT ITEMS (Version 17), an extension for the gnome-shell.
-    (C) 2011-2019 Kurt Fleisch; <https://www.bananenfisch.net/gnome/> <https://github.com/bananenfisch/RecentItems>
+    RECENT ITEMS (Version 18), an extension for the gnome-shell.
+    (C) 2011-2020 Kurt Fleisch; <https://www.bananenfisch.net/gnome/> <https://github.com/bananenfisch/RecentItems>
     Gnome Shell Extensions: <https://extensions.gnome.org/>
 
     This program is free software: you can redistribute it and/or modify
@@ -40,10 +40,12 @@ function sortfunc(x,y) {
   return y[0] - x[0];
 }
 
-var MyPopupMenuItem = class MyPopupMenuItem extends PopupMenu.PopupBaseMenuItem {
-
-  constructor(gicon, text, params) {
-    super(params);
+var MyPopupMenuItem = GObject.registerClass({
+  GTypeName: "MyPopupMenuItem"
+},
+class MyPopupMenuItem extends PopupMenu.PopupBaseMenuItem {
+  _init(gicon, text, params) {
+    super._init(params);
 
     this.box = new St.BoxLayout({ style_class: 'popup-combobox-item' });
 
@@ -57,11 +59,12 @@ var MyPopupMenuItem = class MyPopupMenuItem extends PopupMenu.PopupBaseMenuItem 
     this.box.add(this.label);
     this.actor.add(this.box);
   }
-};
+});
 
-var RecentItems = GObject.registerClass(
+var RecentItems = GObject.registerClass({
+  GTypeName: "RecentItems"
+},
 class RecentItems extends PanelMenu.Button {
-
   _init() {
     super._init(0.0);
     this.connect('destroy', this._onDestroy.bind(this));
