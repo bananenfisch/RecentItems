@@ -3,7 +3,7 @@
   "description": "Adds an icon for recently used items at the top panel; clear list by click; left click: open file, right click: open containing folder; Settings for: number of items, number of items under \"more\" and blacklisting options are defined at the top of extension.js (see https://github.com/bananenfisch/RecentItems for more infos).",
   "name": "Recent Items",
   "shell-version": [
-    "3.36", "40", "41", "42", "43"
+    "3.36", "40", "41", "42", "43", "44"
   ], 
   "url": "https://github.com/bananenfisch/RecentItems",
   "uuid": "RecentItems@bananenfisch.net",
