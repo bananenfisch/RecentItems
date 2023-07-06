@@ -37,7 +37,7 @@ const PopupMenu = imports.ui.popupMenu;
 const PanelMenu = imports.ui.panelMenu;
 
 function sortfunc(x,y) {
-  return y[0] - x[0];
+  return y[0].compare(x[0]);
 }
 
 var MyPopupMenuItem = GObject.registerClass({
