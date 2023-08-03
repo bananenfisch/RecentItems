@@ -1,5 +1,5 @@
 /*
-    RECENT ITEMS (Version 21), an extension for the gnome-shell.
+    RECENT ITEMS (Version 23), an extension for the gnome-shell.
     (C) 2011-2023 Kurt Fleisch; <https://www.bananenfisch.net/gnome/> <https://github.com/bananenfisch/RecentItems>
     Gnome Shell Extensions: <https://extensions.gnome.org/>
 
