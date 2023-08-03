@@ -1,6 +1,6 @@
 /*
-    RECENT ITEMS (Version 20), an extension for the gnome-shell.
-    (C) 2011-2020 Kurt Fleisch; <https://www.bananenfisch.net/gnome/> <https://github.com/bananenfisch/RecentItems>
+    RECENT ITEMS (Version 21), an extension for the gnome-shell.
+    (C) 2011-2023 Kurt Fleisch; <https://www.bananenfisch.net/gnome/> <https://github.com/bananenfisch/RecentItems>
     Gnome Shell Extensions: <https://extensions.gnome.org/>
 
     This program is free software: you can redistribute it and/or modify
@@ -91,7 +91,7 @@ class RecentItems extends PanelMenu.Button {
 
     for (let i = 0; i < countItem; i++) {
       modlist[i] = new Array(2);
-      modlist[i][0] = items[i].get_modified();
+      modlist[i][0] = items[i].get_modified().to_unix();
       modlist[i][1] = i;
     }
 
