@@ -1,0 +1,22 @@
+{
+  "name": "@extensions-valhalla/recent-items",
+  "version": "1.0.0",
+  "private": "true",
+  "description": "Adds an icon for recently used items at the top panel",
+  "scripts": {
+    "clean": "rm -fr RecentItems@bananenfisch.net.shell-extension.zip",
+    "extension:build": "gnome-extensions pack -f -o .",
+    "extension:install": "pnpm run extension:build && gnome-extensions install RecentItems@bananenfisch.net.shell-extension.zip",
+    "format": "prettier --write *.{js,md,json}"
+  },
+  "prettier": {
+    "useTabs": false,
+    "tabWidth": 2,
+    "singleQuote": false,
+    "trailingComma": "all",
+    "printWidth": 100
+  },
+  "devDependencies": {
+    "prettier": "^3.0.3"
+  }
+}
