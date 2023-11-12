@@ -7,7 +7,6 @@
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version. <http://www.gnu.org/licenses/>
 
-import Gtk from "gi://Gtk";
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 import St from "gi://St";
@@ -15,8 +14,7 @@ import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import * as PopupMenu from "resource:///org/gnome/shell/ui/popupMenu.js";
 import * as PanelMenu from "resource:///org/gnome/shell/ui/panelMenu.js";
 import { Extension, gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
-
-const { RecentManager } = Gtk;
+import RecentManager from "./recentManager.js";
 
 export default class RecentItemsExtension extends Extension {
   constructor(metadata) {
@@ -80,6 +78,7 @@ const RecentItems = GObject.registerClass(
     destroy() {
       this._extension._settings.disconnect(this.settingsChangeHandler);
       this.recentManager.disconnect(this.changeHandler);
+      this.recentManager.destroy();
       super.destroy();
     }
 
@@ -96,7 +95,7 @@ const RecentItems = GObject.registerClass(
 
       for (let i = 0; i < countItem; i++) {
         modifiedList[i] = new Array(2);
-        modifiedList[i][0] = items[i].get_modified().to_unix();
+        modifiedList[i][0] = items[i].mtime.tv_sec;
         modifiedList[i][1] = i;
       }
 
@@ -108,15 +107,11 @@ const RecentItems = GObject.registerClass(
       let blacklistList = blacklistString.split(",");
 
       while (id_show < showItemCount && id < countItem) {
-        let item_type = items[modifiedList[id][1]].get_mime_type();
+        let item_type = items[modifiedList[id][1]].mime_type;
         if (blacklistList.indexOf(item_type.split("/")[0]) == -1) {
           let gicon = Gio.content_type_get_icon(item_type);
-          let menuItem = new PopupMenuItem(
-            gicon,
-            items[modifiedList[id][1]].get_display_name(),
-            {},
-          );
-          let uri = items[modifiedList[id][1]].get_uri();
+          let menuItem = new PopupMenuItem(gicon, items[modifiedList[id][1]].displayName, {});
+          let uri = items[modifiedList[id][1]].uri;
           this.menu.addMenuItem(menuItem);
           menuItem.connect("activate", (_, ev) => {
             this._launchFile(uri, ev);
@@ -130,15 +125,11 @@ const RecentItems = GObject.registerClass(
         this.moreItem = new PopupMenu.PopupSubMenuMenuItem(_("More..."));
         this.menu.addMenuItem(this.moreItem);
         while (id_show < showItemCount + moreItemCount && id < countItem) {
-          let item_type = items[modifiedList[id][1]].get_mime_type();
+          let item_type = items[modifiedList[id][1]].mime_type;
           if (blacklistList.indexOf(item_type.split("/")[0]) == -1) {
             let gicon = Gio.content_type_get_icon(item_type);
-            let menuItem = new PopupMenuItem(
-              gicon,
-              items[modifiedList[id][1]].get_display_name(),
-              {},
-            );
-            let uri = items[modifiedList[id][1]].get_uri();
+            let menuItem = new PopupMenuItem(gicon, items[modifiedList[id][1]].displayName, {});
+            let uri = items[modifiedList[id][1]].uri;
             this.moreItem.menu.addMenuItem(menuItem);
             menuItem.connect("activate", (_, ev) => {
               this._launchFile(uri, ev);
@@ -167,8 +158,7 @@ const RecentItems = GObject.registerClass(
     }
 
     _clearAll() {
-      let GtkRecent = new RecentManager();
-      GtkRecent.purge_items();
+      this.recentManager.purge_items();
     }
   },
 );
