@@ -1,179 +1,164 @@
-/*
-    RECENT ITEMS (Version 23), an extension for the gnome-shell.
-    (C) 2011-2023 Kurt Fleisch; <https://www.bananenfisch.net/gnome/> <https://github.com/bananenfisch/RecentItems>
-    Gnome Shell Extensions: <https://extensions.gnome.org/>
+// RECENT ITEMS, an extension for the gnome-shell.
+// (C) 2011-2023 Kurt Fleisch; <https://www.bananenfisch.net/gnome/> <https://github.com/bananenfisch/RecentItems>
+// Gnome Shell Extensions: <https://extensions.gnome.org/>
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version. <http://www.gnu.org/licenses/>
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version. <http://www.gnu.org/licenses/>
 
+import Gio from "gi://Gio";
+import GObject from "gi://GObject";
+import St from "gi://St";
+import * as Main from "resource:///org/gnome/shell/ui/main.js";
+import * as PopupMenu from "resource:///org/gnome/shell/ui/popupMenu.js";
+import * as PanelMenu from "resource:///org/gnome/shell/ui/panelMenu.js";
+import { Extension, gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
+import RecentManager from "./recentManager.js";
 
-    DEFINE YOUR SETTINGS HERE (restart the gnome-shell after changing...)
-*/
-const ITEMS = 10;       // number of items to list
-const MORE = 50;        // number of items to list under "more..."
-const BLACKLIST = "";   // to blacklist (hide) spezific MIME media types
+export default class RecentItemsExtension extends Extension {
+  constructor(metadata) {
+    super(metadata);
+  }
 
-/*
-    available media-types are: text, image, audio, video, application, multipart, message, model.
-    you can define one or more (seperate with ",") types.
+  enable() {
+    this._settings = this.getSettings();
+    this.rec = new RecentItems(this);
+  }
 
-    for example to blacklist all images use:
-const BLACKLIST = "image";
-
-    to blacklist all images, videos and audios, you can use:
-const BLACKLIST = "image,audio,video";
-
-    END OF SETTINGS SECTION
-*/
-
-const Gtk = imports.gi.Gtk;
-const Gio = imports.gi.Gio;
-const GObject = imports.gi.GObject;
-const St = imports.gi.St;
-const Main = imports.ui.main;
-const PopupMenu = imports.ui.popupMenu;
-const PanelMenu = imports.ui.panelMenu;
-
-function sortfunc(x,y) {
-  return y[0] - x[0];
+  disable() {
+    this.rec.destroy();
+    this.rec = null;
+  }
 }
 
-var MyPopupMenuItem = GObject.registerClass({
-  GTypeName: "MyPopupMenuItem"
-},
-class MyPopupMenuItem extends PopupMenu.PopupBaseMenuItem {
-  _init(gicon, text, params) {
-    super._init(params);
+const PopupMenuItem = GObject.registerClass(
+  class PopupMenuItem extends PopupMenu.PopupBaseMenuItem {
+    constructor(gicon, text, params) {
+      super(params);
 
-    this.box = new St.BoxLayout({ style_class: 'popup-combobox-item' });
+      this.box = new St.BoxLayout({ style_class: "popup-combobox-item" });
 
-    if (gicon)
-      this.icon = new St.Icon({ gicon: gicon, style_class: 'popup-menu-icon' });
-    else
-      this.icon = new St.Icon({ icon_name: 'edit-clear-symbolic', icon_size: 22 });
+      this.icon = gicon
+        ? new St.Icon({ gicon, style_class: "popup-menu-icon" })
+        : new St.Icon({ icon_name: "edit-clear-symbolic", icon_size: 22 });
 
-    this.box.add(this.icon);
-    this.label = new St.Label({ text: " " + text });
-    this.box.add(this.label);
-    this.actor.add(this.box);
-  }
-});
+      this.box.add(this.icon);
+      this.label = new St.Label({ text: " " + text });
+      this.box.add(this.label);
+      this.add(this.box);
+    }
+  },
+);
 
-var RecentItems = GObject.registerClass({
-  GTypeName: "RecentItems"
-},
-class RecentItems extends PanelMenu.Button {
-  _init() {
-    super._init(0.0);
-    this.connect('destroy', this._onDestroy.bind(this));
-    this._iconActor = new St.Icon({ icon_name: 'document-open-recent-symbolic', style_class: 'system-status-icon' });
-    this.actor.add_actor(this._iconActor);
-    this.actor.add_style_class_name('panel-status-button');
+const RecentItems = GObject.registerClass(
+  class RecentItems extends PanelMenu.Button {
+    constructor(extension) {
+      super(0.0);
 
-    this.RecentManager = new Gtk.RecentManager();
-    this._display();
+      this._extension = extension;
 
-    this.conhandler = this.RecentManager.connect('changed', this._redisplay.bind(this));
+      this._iconActor = new St.Icon({
+        icon_name: "document-open-recent-symbolic",
+        style_class: "system-status-icon",
+      });
 
-    Main.panel.addToStatusArea('recent-items', this);
-  }
+      this.add_actor(this._iconActor);
+      this.add_style_class_name("panel-status-button");
 
-  _onDestroy() {
-    this.RecentManager.disconnect(this.conhandler);
-  }
+      this.recentManager = new RecentManager();
+      this._sync();
 
-  _display() {
-    let items = this.RecentManager.get_items();
-    let modlist = new Array();
-    let countItem = items.length;
+      this.changeHandler = this.recentManager.connect("changed", () => this._sync());
+      this.settingsChangeHandler = this._extension._settings.connect("changed", () => this._sync());
 
-    for (let i = 0; i < countItem; i++) {
-      modlist[i] = new Array(2);
-      modlist[i][0] = items[i].get_modified().to_unix();
-      modlist[i][1] = i;
+      Main.panel.addToStatusArea(this._extension.uuid, this);
     }
 
-    modlist.sort(sortfunc);
+    destroy() {
+      this._extension._settings.disconnect(this.settingsChangeHandler);
+      this.recentManager.disconnect(this.changeHandler);
+      this.recentManager.destroy();
+      super.destroy();
+    }
 
-    let id = 0;
-    let idshow = 0;
-    let blacklistString = BLACKLIST.replace(/\s/g, "");
-    let blacklistList = blacklistString.split(",");
+    _sync() {
+      this.menu.removeAll();
 
-    while (idshow < ITEMS && id < countItem) {
-      let itemtype = items[modlist[id][1]].get_mime_type();
-      if (blacklistList.indexOf((itemtype.split("/"))[0]) == -1) {
-        let gicon = Gio.content_type_get_icon(itemtype);
-        let menuItem = new MyPopupMenuItem(gicon, items[modlist[id][1]].get_display_name(), {});
-        let uri = items[modlist[id][1]].get_uri();
-        this.menu.addMenuItem(menuItem);
-        menuItem.connect('activate', (mItem, ev) => {
-          this._launchFile(uri, ev);
-        });
-        idshow++;
+      const showItemCount = this._extension._settings.get_int("item-count");
+      const moreItemCount = this._extension._settings.get_int("more-item-count");
+      const itemBlacklist = this._extension._settings.get_string("item-blacklist");
+
+      let items = this.recentManager.get_items();
+      let modifiedList = [];
+      let countItem = items.length;
+
+      for (let i = 0; i < countItem; i++) {
+        modifiedList[i] = new Array(2);
+        modifiedList[i][0] = items[i].mtime.tv_sec;
+        modifiedList[i][1] = i;
       }
-      id++;
-    }
 
-    if (id < countItem && MORE > 0) {
-      this.moreItem = new PopupMenu.PopupSubMenuMenuItem(_("More..."));
-      this.menu.addMenuItem(this.moreItem);
-      while (idshow < ITEMS+MORE && id < countItem) {
-        let itemtype = items[modlist[id][1]].get_mime_type();
-        if (blacklistList.indexOf((itemtype.split("/"))[0]) == -1) {
-          let gicon = Gio.content_type_get_icon(itemtype);
-          let menuItem = new MyPopupMenuItem(gicon, items[modlist[id][1]].get_display_name(), {});
-          let uri = items[modlist[id][1]].get_uri();
-          this.moreItem.menu.addMenuItem(menuItem);
-          menuItem.connect('activate', (mItem, ev) => {
+      modifiedList.sort((x, y) => y[0] - x[0]);
+
+      let id = 0;
+      let id_show = 0;
+      let blacklistString = itemBlacklist.replace(/\s/g, "");
+      let blacklistList = blacklistString.split(",");
+
+      while (id_show < showItemCount && id < countItem) {
+        let item_type = items[modifiedList[id][1]].mime_type;
+        if (blacklistList.indexOf(item_type.split("/")[0]) == -1) {
+          let gicon = Gio.content_type_get_icon(item_type);
+          let menuItem = new PopupMenuItem(gicon, items[modifiedList[id][1]].displayName, {});
+          let uri = items[modifiedList[id][1]].uri;
+          this.menu.addMenuItem(menuItem);
+          menuItem.connect("activate", (_, ev) => {
             this._launchFile(uri, ev);
           });
-          idshow++;
+          id_show++;
         }
         id++;
       }
+
+      if (id < countItem && moreItemCount > 0) {
+        this.moreItem = new PopupMenu.PopupSubMenuMenuItem(_("More..."));
+        this.menu.addMenuItem(this.moreItem);
+        while (id_show < showItemCount + moreItemCount && id < countItem) {
+          let item_type = items[modifiedList[id][1]].mime_type;
+          if (blacklistList.indexOf(item_type.split("/")[0]) == -1) {
+            let gicon = Gio.content_type_get_icon(item_type);
+            let menuItem = new PopupMenuItem(gicon, items[modifiedList[id][1]].displayName, {});
+            let uri = items[modifiedList[id][1]].uri;
+            this.moreItem.menu.addMenuItem(menuItem);
+            menuItem.connect("activate", (_, ev) => {
+              this._launchFile(uri, ev);
+            });
+            id_show++;
+          }
+          id++;
+        }
+      }
+
+      if (countItem > 0) {
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        let menuItem = new PopupMenuItem(false, " Clear list", {});
+        this.menu.addMenuItem(menuItem);
+        menuItem.connect("activate", this._clearAll.bind(this));
+      }
     }
 
-    if (countItem > 0) {
-      this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-      let menuItem = new MyPopupMenuItem(false, ' Clear list', {});
-      this.menu.addMenuItem(menuItem);
-      menuItem.connect('activate', this._clearAll.bind(this));
+    _launchFile(uri, ev) {
+      Gio.app_info_launch_default_for_uri(
+        ev.get_button() == 3
+          ? Gio.Vfs.get_default().get_file_for_uri(uri).get_parent().get_uri()
+          : uri,
+        global.create_app_launch_context(0, -1),
+      );
     }
-  }
 
-  _redisplay() {
-    this.menu.removeAll();
-    this._display();
-  }
-
-  _launchFile(uri, ev) {
-    if (ev.get_button() == 3) {
-      let dir = Gio.Vfs.get_default().get_file_for_uri(uri).get_parent().get_uri();
-      Gio.app_info_launch_default_for_uri(dir, global.create_app_launch_context(0, -1));
+    _clearAll() {
+      this.recentManager.purge_items();
     }
-    else {
-      Gio.app_info_launch_default_for_uri(uri, global.create_app_launch_context(0, -1));
-    }
-  }
-
-  _clearAll() {
-    let GtkRecent = new Gtk.RecentManager();
-    GtkRecent.purge_items();
-  }
-});
-
-function init() {
-}
-
-let Rec;
-
-function enable() {
-  Rec = new RecentItems();
-}
-
-function disable() {
-  Rec.destroy();
-}
+  },
+);
