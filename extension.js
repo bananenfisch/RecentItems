@@ -43,10 +43,10 @@ const PopupMenuItem = GObject.registerClass(
         ? new St.Icon({ gicon, style_class: "popup-menu-icon" })
         : new St.Icon({ icon_name: "edit-clear-symbolic", icon_size: 22 });
 
-      this.box.add(this.icon);
+      this.box.add_child(this.icon);
       this.label = new St.Label({ text: " " + text });
-      this.box.add(this.label);
-      this.add(this.box);
+      this.box.add_child(this.label);
+      this.add_child(this.box);
     }
   },
 );
@@ -63,7 +63,7 @@ const RecentItems = GObject.registerClass(
         style_class: "system-status-icon",
       });
 
-      this.add_actor(this._iconActor);
+      this.add_child(this._iconActor);
       this.add_style_class_name("panel-status-button");
 
       this.recentManager = new RecentManager();
