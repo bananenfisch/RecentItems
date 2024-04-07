@@ -4,5 +4,5 @@
   "uuid": "RecentItems@bananenfisch.net",
   "url": "https://github.com/bananenfisch/RecentItems",
   "settings-schema": "org.gnome.shell.extensions.recent-items",
-  "shell-version": ["45"]
+  "shell-version": ["46"]
 }
