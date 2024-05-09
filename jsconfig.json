@@ -1,4 +1,0 @@
-{
-  "include": ["./**/*.js", "env.d.ts"],
-  "exclude": ["node_modules"]
-}
