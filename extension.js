@@ -27,9 +27,9 @@ export default class RecentItemsExtension extends Extension {
   }
 
   disable() {
-    this._settings = null;
     this.rec.destroy();
     this.rec = null;
+    this._settings = null;
   }
 }
 
