@@ -93,7 +93,7 @@ export default class RecentItemsPreferences extends ExtensionPreferences {
     });
 
     label = new Gtk.Label({
-      label: _("Item Blacklist"),
+      label: _("Item Blacklist\nSeperate with comma\nExample: image,audio,video"),
       hexpand: true,
       halign: Gtk.Align.START,
     });
