@@ -6,12 +6,12 @@
       <summary>Number of items to list</summary>
     </key>
     <key name="more-item-count" type="i">
-      <default>25</default>
+      <default>50</default>
       <summary>Number of items to list under "more..."</summary>
     </key>
     <key name="item-blacklist" type="s">
       <default>''</default>
-      <summary>Mime Types to Blacklist from showing</summary>
+      <summary>Mime Types to Blacklist from showing, seperate with comma (example: image,audio,video)</summary>
     </key>
   </schema>
 </schemalist>
