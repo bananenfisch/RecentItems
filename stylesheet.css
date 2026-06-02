@@ -1,0 +1,22 @@
+/* stylesheet.css */
+
+.item-deleted, .item-path-deleted {
+    opacity: 0.5; /* Make the item semi-transparent */
+    text-decoration: line-through; /* Strike-through text */
+    color: gray; /* Dim color for deleted items */
+}
+
+.item-deleted:hover, .item-path-deleted {
+    opacity: 0.8; /* Slightly highlight when hovered */
+}
+
+.item-path, .item-path-deleted {
+    padding: 0 6px;
+    font-size: 65%;
+    text-align: right;
+    
+}
+
+.popup-menu-section {
+    padding: 0 10px; /* Add padding for better alignment */
+}

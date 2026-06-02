@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.enhanced-recent-items" path="/org/gnome/shell/extensions/enhanced-recent-items/">
+
+    <key type="i" name="window-width-percentage">
+      <default>33</default>
+      <summary>Menu width (% of screen)</summary>
+      <description>
+        The width of the recent items menu as a percentage of the screen width.
+      </description>
+      <range min="0" max="100" />
+    </key>
+
+    <key name="item-count" type="i">
+      <default>10</default>
+      <summary>Number of items to list</summary>
+      <description>
+        The maximum number of recent items shown in the menu.
+      </description>
+    </key>
+
+    <key name="item-blacklist" type="s">
+      <default>''</default>
+      <summary>MIME types to hide (comma-separated; e.g. image,audio,video)</summary>
+      <description>
+        Recent items with these MIME types will not be shown.
+      </description>
+    </key>
+    
+    <key name="directory-blacklist" type="s">
+      <default>''</default>
+      <summary>Directory blacklist (one per line)</summary>
+      <description>
+        Directories that should be ignored. One directory per line.
+      </description>
+    </key>
+
+    <key name="private-mode" type="b">
+      <default>false</default>
+      <summary>Enable private mode</summary>
+      <description>
+        If true, the recent items list is not modified.
+      </description>
+    </key>
+
+    <key name="show-deleted-files" type="b">
+      <default>false</default>
+      <summary>Show deleted files</summary>
+      <description>
+        If true, deleted items are still shown in the recent items list.
+      </description>
+    </key>
+
+  </schema>
+</schemalist>

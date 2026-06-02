@@ -1,9 +1,10 @@
 {
-  "name": "Recent Items",
+  "name": "Enhanced Recent Items",
   "description": "Adds an icon for recently used items at the top panel",
-  "uuid": "RecentItems@bananenfisch.net",
-  "url": "https://github.com/bananenfisch/RecentItems",
-  "settings-schema": "org.gnome.shell.extensions.recent-items",
-  "shell-version": ["46", "47"],
-  "version": 28
+  "uuid": "RecentItems@lgo.io",
+  "url": "https://github.com/lgoio/RecentItems",
+  "settings-schema": "org.gnome.shell.extensions.enhanced-recent-items",
+  "shell-version": ["45", "46", "47", "48", "49", "50"],
+  "gettext-domain": "RecentItems@lgo.io",
+  "version": 34
 }
